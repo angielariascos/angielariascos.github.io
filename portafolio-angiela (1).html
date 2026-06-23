@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portafolio — Angiela Riascos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --accent: #FF6B47;
+      --accent-dim: rgba(255,107,71,0.15);
+      --accent-border: rgba(255,107,71,0.35);
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Cursor ── */
+    #custom-cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    }
+    #custom-cursor.hovering {
+      width: 32px; height: 32px;
+      background: transparent;
+      border: 1.5px solid var(--accent);
+    }
+
+    /* ── Grid bg ── */
+    #grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,107,71,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,107,71,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+      transition: background-position 0.1s ease;
+    }
+    #grid-glow {
+      position: fixed;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,71,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      transition: left 0.15s ease, top 0.15s ease;
+    }
+
+    /* ── Pages ── */
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.5s ease; }
+
+    /* ── Animations ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatY {
+      0%,100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+      50%     { transform: translateY(-10px) rotate(var(--rot, 0deg)); }
+    }
+    @keyframes floatY2 {
+      0%,100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+      50%     { transform: translateY(-14px) rotate(var(--rot, 0deg)); }
+    }
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Nav label ── */
+    .nav-label {
+      position: fixed;
+      top: 20px; left: 24px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      z-index: 100;
+      letter-spacing: 0.05em;
+    }
+
+    /* ══════════════════════════════
+       HOME PAGE
+    ══════════════════════════════ */
+    #page-home {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 24px 60px;
+      position: relative;
+      z-index: 2;
+      gap: 40px;
+    }
+
+    /* Hero card */
+    .hero-card {
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      --rot: 0deg;
+      animation: revealUp 0.8s ease 0.2s both, floatY 6s ease-in-out 1s infinite;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.8;
+    }
+    .hero-card .hey {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+    .hero-card h1 {
+      font-size: clamp(52px, 12vw, 80px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+    .hero-card .subtitle {
+      font-size: 15px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 12px;
+      font-style: italic;
+      letter-spacing: 0.02em;
+    }
+
+    /* Profile section */
+    .profile-section {
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+      width: 100%;
+      max-width: 480px;
+      --rot: 0deg;
+      animation: revealUp 0.8s ease 0.5s both, floatY2 7s ease-in-out 1.5s infinite;
+    }
+    .phone-card {
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      width: 140px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 16px 12px;
+      flex-shrink: 0;
+      transform: rotate(-5deg);
+      overflow: hidden;
+      position: relative;
+    }
+    .phone-card .photo-area {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 44px;
+      background: #1e1e1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* ── REEMPLAZÁ esta imagen con tu foto ── */
+    .phone-card .photo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none; /* Cambiá a block cuando agregues la imagen */
+    }
+    .phone-card .photo-area .avatar-placeholder {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1.5px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--accent);
+    }
+    .phone-card .name-tag {
+      font-size: 10px;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      z-index: 1;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+    .role-card {
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 20px;
+    }
+    .role-card .role-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+    }
+    .role-card .role-sub {
+      font-size: 13px;
+      color: var(--accent);
+      margin-top: 6px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* Categories */
+    .categories-section {
+      width: 100%;
+      max-width: 480px;
+      animation: revealUp 0.8s ease 0.8s both;
+    }
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .cards-row {
+      display: flex;
+      gap: 14px;
+    }
+    .cat-card {
+      flex: 1;
+      min-height: 180px;
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 16px;
+      cursor: none;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .cat-card:nth-child(1) { --rot: -6deg; animation: floatY  5s ease-in-out 0.5s infinite; }
+    .cat-card:nth-child(2) { --rot:  0deg; animation: floatY2 6.5s ease-in-out 1s infinite; }
+    .cat-card:nth-child(3) { --rot:  5deg; animation: floatY  7s ease-in-out 1.5s infinite; }
+    .cat-card:hover {
+      transform: rotate(0deg) translateY(-20px) scale(1.06) !important;
+      border-color: var(--accent-border);
+      box-shadow: 0 0 28px rgba(255,107,71,0.12);
+      animation-play-state: paused !important;
+      z-index: 10;
+    }
+    .cat-card:hover .cat-label { color: var(--accent); }
+
+    /* ── REEMPLAZÁ cada .cat-bg con background-image: url('tu-imagen.jpg') ── */
+    .cat-bg {
+      position: absolute;
+      inset: 0;
+      background: #1e1e1e;
+      border-radius: 20px;
+      background-size: cover;
+      background-position: center;
+    }
+    .cat-label {
+      position: relative;
+      z-index: 1;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      font-family: 'Space Mono', monospace;
+      line-height: 1.3;
+      transition: color 0.3s;
+    }
+
+    /* Contact */
+    .contact-section {
+      width: 100%;
+      max-width: 480px;
+      animation: revealUp 0.8s ease 1.1s both;
+    }
+    .contact-card {
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      --rot: 0deg;
+      animation: floatY 8s ease-in-out 2s infinite;
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.4;
+    }
+    .contact-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .contact-card p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 24px;
+      font-family: 'Space Mono', monospace;
+    }
+    .contact-links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .contact-pill {
+      background: #222;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      cursor: none;
+      transition: all 0.2s;
+      font-family: 'Space Mono', monospace;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .contact-pill:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ══════════════════════════════
+       CATEGORY PAGE
+    ══════════════════════════════ */
+    #page-category {
+      min-height: 100vh;
+      padding: 80px 24px 60px;
+      position: relative;
+      z-index: 2;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      cursor: none;
+      margin-bottom: 40px;
+      transition: opacity 0.2s;
+      background: none;
+      border: none;
+      letter-spacing: 0.05em;
+    }
+    .back-btn:hover { opacity: 0.7; }
+    .cat-page-title small {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .cat-page-title h2 {
+      font-size: clamp(36px, 8vw, 56px);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.05;
+      margin-bottom: 32px;
+    }
+
+    /* Video tabs */
+    .video-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .vtab {
+      padding: 8px 18px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      cursor: none;
+      transition: all 0.25s;
+      letter-spacing: 0.05em;
+    }
+    .vtab:hover, .vtab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* Gallery */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .gallery-item {
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      background: #1a1a1a;
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      cursor: none;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s;
+      --rot: 0deg;
+      animation: floatY 6s ease-in-out calc(var(--i, 0) * 0.4s) infinite;
+    }
+    .gallery-item:hover {
+      transform: scale(1.04) translateY(-6px) !important;
+      border-color: var(--accent-border);
+      animation-play-state: paused !important;
+      z-index: 5;
+    }
+    /* ── Cada .gallery-item puede tener background-image con tu imagen ── */
+    .gallery-item .img-ph {
+      width: 100%; height: 100%;
+      background: #1e1e1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery-item .img-ph img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .gallery-item .img-ph .ph-num {
+      font-size: 28px;
+      color: rgba(255,255,255,0.06);
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+    }
+    .gallery-item .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 16px;
+      border-bottom: 2px solid var(--accent);
+    }
+    .gallery-item:hover .overlay { opacity: 1; }
+    .overlay-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .lightbox.open { display: flex; animation: fadeIn 0.3s ease; }
+    .lightbox-inner {
+      background: #1a1a1a;
+      border: 1px solid var(--accent-border);
+      border-radius: 20px;
+      width: min(90vw, 400px);
+      aspect-ratio: 4/5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .lightbox-inner img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+    .lightbox-inner .ph-text {
+      font-size: 40px;
+      color: rgba(255,255,255,0.06);
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+    }
+    .lightbox-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: -16px; right: -16px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      transition: transform 0.2s;
+      line-height: 1;
+    }
+    .lightbox-close:hover { transform: scale(1.1); }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .cards-row { gap: 8px; }
+      .cat-card { min-height: 140px; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .hero-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="custom-cursor"></div>
+  <div id="grid-bg"></div>
+  <div id="grid-glow"></div>
+  <div class="nav-label">:Hoyl</div>
+
+  <!-- ══════════ HOME ══════════ -->
+  <div id="page-home" class="page active">
+
+    <div class="hero-card">
+      <div class="hey">:Hey!</div>
+      <h1>Portafolio</h1>
+      <div class="subtitle">Angiela Riascos</div>
+    </div>
+
+    <div class="profile-section">
+      <div class="phone-card">
+        <div class="photo-area">
+          <!-- REEMPLAZÁ src con tu foto -->
+          <img src="tu-foto.jpg" alt="Angiela Riascos" />
+          <div class="avatar-placeholder">👤</div>
+        </div>
+        <div class="name-tag">Angiela Riascos</div>
+      </div>
+      <div class="role-card">
+        <div class="role-title">Publicista</div>
+        <div class="role-sub">rol. creativa</div>
+      </div>
+    </div>
+
+    <div class="categories-section">
+      <div class="section-label">Mis áreas</div>
+      <div class="cards-row">
+
+        <div class="cat-card" onclick="openCategory('diseño')">
+          <!-- REEMPLAZÁ con: style="background-image: url('imagen-diseño.jpg')" -->
+          <div class="cat-bg"></div>
+          <div class="cat-label">Diseño<br>Gráfico</div>
+        </div>
+
+        <div class="cat-card" onclick="openCategory('video')">
+          <div class="cat-bg"></div>
+          <div class="cat-label">Edición<br>de Videos</div>
+        </div>
+
+        <div class="cat-card" onclick="openCategory('ilustracion')">
+          <div class="cat-bg"></div>
+          <div class="cat-label">Ilustración</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="contact-section">
+      <div class="contact-card">
+        <h3>Hablemos</h3>
+        <p>¿Tenés un proyecto en mente?</p>
+        <div class="contact-links">
+          <!-- REEMPLAZÁ href con tus links reales -->
+          <a class="contact-pill" href="https://instagram.com/tuusuario" target="_blank">Instagram</a>
+          <a class="contact-pill" href="https://behance.net/tuusuario" target="_blank">Behance</a>
+          <a class="contact-pill" href="https://linkedin.com/in/tuusuario" target="_blank">LinkedIn</a>
+          <a class="contact-pill" href="mailto:tu@email.com">Email</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════ CATEGORY PAGE ══════════ -->
+  <div id="page-category" class="page">
+    <button class="back-btn" onclick="goBack()">↩ volver</button>
+    <div class="cat-page-title">
+      <small id="cat-eyebrow">Conoce aquí mis</small>
+      <h2 id="cat-title">Ilustraciones</h2>
+    </div>
+    <div id="video-tabs" class="video-tabs" style="display:none">
+      <button class="vtab active" onclick="filterTab(this,'ads')">ADS</button>
+      <button class="vtab" onclick="filterTab(this,'organico')">Orgánico</button>
+      <button class="vtab" onclick="filterTab(this,'storytelling')">Storytelling</button>
+      <button class="vtab" onclick="filterTab(this,'longterm')">Long Term</button>
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+
+  <!-- ══════════ LIGHTBOX ══════════ -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+      <button class="lightbox-close" onclick="closeLightbox()">×</button>
+      <img id="lb-img" src="" alt="" />
+      <span class="ph-text" id="lb-num">01</span>
+    </div>
+    <div class="lightbox-title" id="lb-title">Proyecto 01</div>
+  </div>
+
+  <script>
+    /* ── Cursor ── */
+    const cursor = document.getElementById('custom-cursor');
+    const glow   = document.getElementById('grid-glow');
+    const gridBg = document.getElementById('grid-bg');
+
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+      glow.style.left   = e.clientX + 'px';
+      glow.style.top    = e.clientY + 'px';
+      const px = (e.clientX / window.innerWidth  - 0.5) * 8;
+      const py = (e.clientY / window.innerHeight - 0.5) * 8;
+      gridBg.style.backgroundPosition = `${px}px ${py}px`;
+    });
+
+    document.querySelectorAll('button, a, .cat-card, .gallery-item, .contact-pill').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+    });
+
+    /* ══════════════════════════════════════════════
+       DATOS DE CATEGORÍAS
+       Para agregar imágenes reales, cambiá cada
+       { num, label, src } con src: 'tu-imagen.jpg'
+    ══════════════════════════════════════════════ */
+    const catData = {
+      diseño: {
+        eyebrow: 'Conoce aquí mis',
+        title: 'Diseño Gráfico',
+        tabs: false,
+        items: [
+          { num: '01', label: 'Proyecto de diseño 01', src: '' },
+          { num: '02', label: 'Proyecto de diseño 02', src: '' },
+          { num: '03', label: 'Proyecto de diseño 03', src: '' },
+          { num: '04', label: 'Proyecto de diseño 04', src: '' },
+          { num: '05', label: 'Proyecto de diseño 05', src: '' },
+          { num: '06', label: 'Proyecto de diseño 06', src: '' },
+          { num: '07', label: 'Proyecto de diseño 07', src: '' },
+          { num: '08', label: 'Proyecto de diseño 08', src: '' },
+        ]
+      },
+      video: {
+        eyebrow: 'Conoce aquí mis',
+        title: 'Videos',
+        tabs: true,
+        items: [
+          { num: '01', label: 'Video 01', src: '', tag: 'ads' },
+          { num: '02', label: 'Video 02', src: '', tag: 'organico' },
+          { num: '03', label: 'Video 03', src: '', tag: 'storytelling' },
+          { num: '04', label: 'Video 04', src: '', tag: 'longterm' },
+          { num: '05', label: 'Video 05', src: '', tag: 'ads' },
+          { num: '06', label: 'Video 06', src: '', tag: 'organico' },
+          { num: '07', label: 'Video 07', src: '', tag: 'storytelling' },
+          { num: '08', label: 'Video 08', src: '', tag: 'longterm' },
+        ]
+      },
+      ilustracion: {
+        eyebrow: 'Conoce aquí mis',
+        title: 'Ilustraciones',
+        tabs: false,
+        items: [
+          { num: '01', label: 'Ilustración 01', src: '' },
+          { num: '02', label: 'Ilustración 02', src: '' },
+          { num: '03', label: 'Ilustración 03', src: '' },
+          { num: '04', label: 'Ilustración 04', src: '' },
+          { num: '05', label: 'Ilustración 05', src: '' },
+          { num: '06', label: 'Ilustración 06', src: '' },
+          { num: '07', label: 'Ilustración 07', src: '' },
+          { num: '08', label: 'Ilustración 08', src: '' },
+        ]
+      }
+    };
+
+    let allItems = [];
+
+    function openCategory(cat) {
+      const data = catData[cat];
+      document.getElementById('cat-eyebrow').textContent = data.eyebrow;
+      document.getElementById('cat-title').textContent   = data.title;
+      document.getElementById('video-tabs').style.display = data.tabs ? 'flex' : 'none';
+      allItems = data.items;
+      if (data.tabs) {
+        document.querySelectorAll('.vtab').forEach((t,i) => t.classList.toggle('active', i === 0));
+        renderGallery(allItems.filter(i => i.tag === 'ads'));
+      } else {
+        renderGallery(allItems);
+      }
+      showPage('page-category');
+    }
+
+    function renderGallery(items) {
+      const grid = document.getElementById('gallery-grid');
+      grid.innerHTML = '';
+      items.forEach((item, i) => {
+        const el = document.createElement('div');
+        el.className = 'gallery-item';
+        el.style.setProperty('--i', i);
+        el.innerHTML = `
+          <div class="img-ph">
+            ${item.src ? `<img src="${item.src}" alt="${item.label}" />` : `<span class="ph-num">${item.num}</span>`}
+          </div>
+          <div class="overlay">
+            <div class="overlay-title">${item.label}</div>
+          </div>
+        `;
+        el.addEventListener('click', () => openLightbox(item));
+        el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+        grid.appendChild(el);
+      });
+    }
+
+    function filterTab(btn, tag) {
+      document.querySelectorAll('.vtab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      renderGallery(allItems.filter(i => i.tag === tag));
+    }
+
+    function openLightbox(item) {
+      const img = document.getElementById('lb-img');
+      const ph  = document.getElementById('lb-num');
+      if (item.src) {
+        img.src = item.src;
+        img.style.display = 'block';
+        ph.style.display  = 'none';
+      } else {
+        img.style.display = 'none';
+        ph.style.display  = 'block';
+        ph.textContent    = item.num;
+      }
+      document.getElementById('lb-title').textContent = item.label;
+      document.getElementById('lightbox').classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+
+    /* Cerrar lightbox con Escape */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function goBack() { showPage('page-home'); }
+  </script>
+</body>
+</html>
